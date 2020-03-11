@@ -1,0 +1,46 @@
+.container {
+  padding-top: 70px;
+  clear: left;
+}
+.navbar .navbar-expand-lg {
+  background: red;
+  color: #fff;
+}
+.page-top-cmds {
+  padding: 10px 0;
+}
+.has-error {
+  color: red;
+}
+.card {
+  border: none;
+  border-bottom: 1px solid #ccc;
+}
+.jumbotron {
+  background: rgb(211, 217, 224);
+}
+a,
+a:hover {
+  color: #333;
+  text-decoration: none;
+}
+.ctgryBtns {
+  padding: 12px 0;
+}
+.ctgryBtn {
+  margin: 2px;
+  border: "1px solid #111";
+  background: rgb(255, 254, 254);
+  padding: 2px 4px;
+  font-size: 16px;
+}
+.ctryFont {
+  font-size: 20px;
+}
+.filterCmds {
+  border-top: "1px solid #ccc";
+  border-bottom: "1px solid #ccc";
+}
+
+@media (max-width: 500px) {
+}
