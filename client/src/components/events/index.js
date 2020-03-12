@@ -123,65 +123,67 @@ class EventsPage extends Component {
             onChange={this.onChange}
           /> */}
 
-          {setting ? (
-            <div className="filterCmds">
-              <h6>
+          <div className="filterCmds">
+            <h6>
+              {setting ? (
                 <span className="ctryFont">
                   {setting.filterCity}, {setting.filterState}
                 </span>
-
-                <button
-                  style={{
-                    height: "30px",
-                    width: "30",
-                    fontSize: "8px",
-                    padding: "5px 2px",
-                    fontWeight: "bold",
-                    margin: "0 5px 0 0",
-                    marginRignt: "60px",
-                    background: "Transparent"
-                  }}
-                  className="btn btn-default"
-                  onClick={() => this.onShowChgCity()}
-                >
-                  \/
-                </button>
-                {this.state.showChgCity ? (
-                  <div>
-                    <input
-                      name="defaultCity"
-                      placeholder="change default city"
-                      onChange={this.onChange}
-                    />
+              ) : (
+                <span>No location set</span>
+              )}
+              <button
+                style={{
+                  height: "30px",
+                  width: "30",
+                  fontSize: "8px",
+                  padding: "5px 2px",
+                  fontWeight: "bold",
+                  margin: "0 5px 0 0",
+                  marginRignt: "60px",
+                  background: "Transparent"
+                }}
+                className="btn btn-default"
+                onClick={() => this.onShowChgCity()}
+              >
+                \/
+              </button>
+              {this.state.showChgCity ? (
+                <div>
+                  <input
+                    name="defaultCity"
+                    placeholder="change default city"
+                    onChange={this.onChange}
+                  />
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => this.onChgDefaultCity()}
+                  >
+                    Submit
+                  </button>
+                </div>
+              ) : null}
+              {categories.list ? (
+                <span className="ctgryBtns">
+                  <button
+                    className="btn btn-default btn-sm ctgryBtn"
+                    onClick={() => this.onFilterCategory("")}
+                  >
+                    All
+                  </button>
+                  {this.props.categories.list.map(c => (
                     <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => this.onChgDefaultCity()}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                ) : null}
-                {categories.list ? (
-                  <span className="ctgryBtns">
-                    <button
+                      key={c._id}
                       className="btn btn-default btn-sm ctgryBtn"
-                      onClick={() => this.onFilterCategory("")}
+                      onClick={() => this.onFilterCategory(c.name)}
                     >
-                      All
+                      {c.name}
                     </button>
-                    {this.props.categories.list.map(c => (
-                      <button
-                        key={c._id}
-                        className="btn btn-default btn-sm ctgryBtn"
-                        onClick={() => this.onFilterCategory(c.name)}
-                      >
-                        {c.name}
-                      </button>
-                    ))}
-                  </span>
-                ) : null}
+                  ))}
+                </span>
+              ) : null}
 
-                {/* <button
+              {/* <button
                   className="btn btn-default"
                   onClick={() => this.onChgDefaultCity()}
                 >
@@ -193,9 +195,8 @@ class EventsPage extends Component {
                 >
                   Theater/Comedy
                 </button> */}
-              </h6>
-            </div>
-          ) : null}
+            </h6>
+          </div>
         </div>
         {/* <div className="page-top-cmds">
           <Link to="/events/new" className="btn btn-primary">

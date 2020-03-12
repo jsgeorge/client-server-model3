@@ -20,39 +20,49 @@ const router = require("express").Router();
 router.get("/", (req, res) => {
   const srchStr = req.query.srchStr;
   const category = req.query.category;
+  const filters = {};
 
   Setting.findOne({ uid: req.query.uid }, (err, setting) => {
     if (err) {
-      Event.find({}, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
     }
     if (setting && setting.filterCity) {
       const city = setting.filterCity;
-      if (srchStr) {
-        const str = `/${srchStr}/`;
-        Event.find({ city: city, name: { $regex: str } }, (err, events) => {
-          if (err) return res.status(400).send(err);
-          return res.status(200).send(events);
-        });
-      } else if (category) {
-        Event.find({ city: city, category: category }, (err, events) => {
-          if (err) return res.status(400).send(err);
-          return res.status(200).send(events);
-        });
-      } else {
-        Event.find({ city: city }, (err, events) => {
-          if (err) return res.status(400).send(err);
-          return res.status(200).send(events);
-        });
-      }
-    } else {
-      Event.find({}, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
+      filters.push({ city: city });
     }
+    if (category) filters.push({ category: category });
+    else if (srchStr) {
+      const str = `/${srchStr}/`;
+      filters.push({ name: { $regex: str } });
+    }
+    Event.find(filters, (err, events) => {
+      if (err) return res.status(400).send(err);
+      return res.status(200).send(events);
+    });
+    // if (setting && setting.filterCity) {
+    //   const city = setting.filterCity;
+    //   if (srchStr) {
+    //     const str = `/${srchStr}/`;
+    //     Event.find({ city: city, name: { $regex: str } }, (err, events) => {
+    //       if (err) return res.status(400).send(err);
+    //       return res.status(200).send(events);
+    //     });
+    //   } else if (category) {
+    //     Event.find({ city: city, category: category }, (err, events) => {
+    //       if (err) return res.status(400).send(err);
+    //       return res.status(200).send(events);
+    //     });
+    //   } else {
+    //     Event.find({ city: city }, (err, events) => {
+    //       if (err) return res.status(400).send(err);
+    //       return res.status(200).send(events);
+    //     });
+    //   }
+    // } else {
+    //   Event.find({}, (err, events) => {
+    //     if (err) return res.status(400).send(err);
+    //     return res.status(200).send(events);
+    //   });
+    // }
   });
 });
 router.get("/id", (req, res) => {
