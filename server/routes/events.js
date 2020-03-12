@@ -22,6 +22,12 @@ router.get("/", (req, res) => {
   const category = req.query.category;
 
   Setting.findOne({ uid: req.query.uid }, (err, setting) => {
+    if (!setting || err) {
+      Event.find({}, (err, events) => {
+        if (err) return res.status(400).send(err);
+        return res.status(200).send(events);
+      });
+    }
     const city = setting.filterCity;
     console.log(city, srchStr);
     if (srchStr) {
