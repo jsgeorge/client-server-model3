@@ -10,7 +10,6 @@ export default function(ComposedComponent) {
       }
     }
     componentWillUpdate(nextProps) {
-      console.log(nextProps.isAuthenticated);
       if (!nextProps.isAuthenticated) {
         this.props.history.push("/");
       }

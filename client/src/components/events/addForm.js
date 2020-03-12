@@ -274,7 +274,6 @@ class AddEventForm extends Component {
   }
 }
 function mapStateToProps(state) {
-  console.log(state);
   return {
     user: state.auth.user,
     categories: state.categories

@@ -2,7 +2,15 @@
   padding-top: 70px;
   clear: left;
 }
-.navbar .navbar-expand-lg {
+nav .navbar-brand,
+.navbar-toggler,
+.navbar-toggler-icon {
+  color: #fff;
+}
+.nav-link {
+  color: #fff;
+}
+nav .navbar {
   background: red;
   color: #fff;
 }

@@ -12,15 +12,27 @@ class Header extends Component {
     const { isAuthenticated } = this.props.auth;
 
     return (
-      <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <nav className="navbar navbar-expand-lg navbar-light bg-danger fixed-top">
         <div className="container-fluid">
           {!isAuthenticated ? (
-            <Link to="/" className="navbar-brand">
+            <Link
+              to="/"
+              className="navbar-brand"
+              style={{
+                color: "#fff"
+              }}
+            >
               MongoEvents
             </Link>
           ) : (
             <span>
-              <Link to="/events" className="navbar-brand">
+              <Link
+                to="/events"
+                className="navbar-brand"
+                style={{
+                  color: "#fff"
+                }}
+              >
                 MongoEvents
               </Link>
               <Link
@@ -51,6 +63,9 @@ class Header extends Component {
             aria-controls="navbarNav"
             aria-expanded="false"
             aria-label="Toggle navigation"
+            style={{
+              color: "#fff"
+            }}
           >
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -82,6 +97,9 @@ class Header extends Component {
                       href="/"
                       onClick={this.logout.bind(this)}
                       className="nav-link "
+                      style={{
+                        color: "#fff"
+                      }}
                     >
                       Sign Out
                     </a>

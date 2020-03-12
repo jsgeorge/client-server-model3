@@ -12,10 +12,8 @@ class EventDetail extends Component {
     console.log("event id to delete", id);
   };
   render() {
-    console.log("props", this.props);
     const { event } = this.props.events;
 
-    console.log(event);
     if (!event) return <div>NO Matching event</div>;
     return (
       <div>

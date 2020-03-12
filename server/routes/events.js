@@ -29,7 +29,6 @@ router.get("/", (req, res) => {
       });
     }
     const city = setting.filterCity;
-    console.log(city, srchStr);
     if (srchStr) {
       const str = `/${srchStr}/`;
       Event.find({ city: city, name: { $regex: str } }, (err, events) => {
