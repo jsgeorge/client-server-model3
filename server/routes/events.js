@@ -21,19 +21,27 @@ router.get("/", (req, res) => {
   const srchStr = req.query.srchStr;
   const category = req.query.category;
   const filters = {};
-
+  const city = "";
   Setting.findOne({ uid: req.query.uid }, (err, setting) => {
     if (err) {
     }
-    if (setting && setting.filterCity) {
-      const city = setting.filterCity;
-      filters.push({ city: city });
-    }
-    if (category) filters.push({ category: category });
-    else if (srchStr) {
+    if (setting && setting.filterCity) city = setting.filterCity;
+
+    if (category) {
+      if (city) {
+        filters = { city: city, category: category };
+      } else {
+        filter = { category: category };
+      }
+    } else if (srchStr) {
       const str = `/${srchStr}/`;
-      filters.push({ name: { $regex: str } });
+      if (city) {
+        filters = { city: city, name: { $regex: str } };
+      } else {
+        filter = { name: { $regex: str } };
+      }
     }
+
     Event.find(filters, (err, events) => {
       if (err) return res.status(400).send(err);
       return res.status(200).send(events);
