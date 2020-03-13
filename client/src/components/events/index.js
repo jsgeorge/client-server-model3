@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import TextFieldGroup from "../common/TextFieldGroup";
 import { getEvents } from "../../actions/eventActions";
 import { getSettings, chgDefaultCity } from "../../actions/settingsActions";
 import { getCategories } from "../../actions/categoryActons";
+import classnames from "classnames";
 
 import EventItem from "./item";
 
@@ -23,6 +25,7 @@ class EventsPage extends Component {
     };
     this.onChange = this.onChange.bind(this);
     this.onSearch = this.onSearch.bind(this);
+    this.onSaveDefaultCity = this.onSaveDefaultCity.bind(this);
   }
 
   componentDidMount() {
@@ -34,6 +37,7 @@ class EventsPage extends Component {
   }
 
   onShowChgCity(e) {
+    this.setState({ errors: {}, isLoading: true });
     this.setState({ showChgCity: !this.state.showChgCity });
   }
   onChange(e) {
@@ -45,42 +49,66 @@ class EventsPage extends Component {
       this.setState({ [e.target.name]: e.target.value });
     }
   }
-  isValidEntries() {
+
+  isValidEntriesSrch() {
     let errors = {};
     const { srchStr } = this.state;
     if (!srchStr) {
       errors.srchStr = "Missing/invalid search term";
     }
-
-    // if (errors) {
     this.setState({ errors });
-    //   return false;
-    // }
-    // return true;
+
     const isValid = Object.keys(errors).length === 0;
+
     return isValid;
   }
-  onSearch(e) {
-    e.preventDefault();
-    console.log("srchstr", this.state.srchStr);
-    this.setState({ errors: {}, isLoading: true });
-    this.props.getEvents("", this.state.srchStr, this.props.user.id).then(
-      res => console.log("search successfull"),
-      err => this.setState({ errors: err.response.data, isLoading: false })
-    );
+  isValidEntriesCity() {
+    let errors = {};
+    const { defaultCity, defaultState } = this.state;
+
+    if (!defaultCity) {
+      errors.defaultCity = "Missing/invalid city";
+    }
+    if (!defaultState) {
+      errors.defaultState = "Missing/invalid state";
+    }
+    this.setState({ errors });
+
+    const isValid = Object.keys(errors).length === 0;
+
+    return isValid;
   }
-  onChgDefaultCity = () => {
-    if (this.isValidEntries()) {
-      this.props.chgDefaultCity(
-        {
-          filterCity: this.state.defaultCity,
-          filterState: this.state.defaultState
-        },
-        this.props.user.id
-      );
-      this.setState({ showChgCity: false });
-      this.props.getSettings(this.props.user.id);
-      this.props.getEvents("", this.props.user.id);
+  clearState = () => {
+    this.setState({ defaultCity: "", srchStr: "", error: {} });
+  };
+  onSearch = () => {
+    if (this.isValidEntriesSrch()) {
+      this.setState({ errors: {}, isLoading: true });
+      this.props.getEvents("", this.state.srchStr, this.props.user.id);
+    }
+  };
+  onSaveDefaultCity = () => {
+    if (this.isValidEntriesCity()) {
+      this.setState({ errors: {}, isLoading: true });
+      this.props
+        .chgDefaultCity(
+          {
+            filterCity: this.state.defaultCity,
+            filterState: this.state.defaultState
+          },
+          this.props.user.id
+        )
+        .then(
+          res => {
+            console.log("Change city successful");
+            this.setState({ showChgCity: false });
+            this.props.getSettings(this.props.user.id);
+            this.props.getEvents("", this.props.user.id);
+          },
+          err => this.setState({ errors: err.response.data, isLoading: false })
+        );
+    } else {
+      console.log("Invalid Entry");
     }
   };
   onFilterCategory = category => {
@@ -93,28 +121,30 @@ class EventsPage extends Component {
     return (
       <div className="events-wrapper">
         <div className="page-top-cmds">
-          <form
-            onSubmit={() => this.onSearch}
-            className="form-inline active-cyan-4"
+          <div
+            className={classnames("form-group", {
+              "has-error": errors.srchStr
+            })}
           >
             <input
               className="form-control form-control-sm mr-3 w-75"
               type="text"
               placeholder="Search events, venues, cities"
-              aria-label="Search"
               name="srchStr"
+              value={this.state.srchStr}
               onChange={this.onChange}
             />
-            <button className="btn btn-default btn-sm">
+            <button
+              className="btn btn-default btn-sm"
+              onClick={() => this.onSearch()}
+            >
               <i className="fa fa-search" aria-hidden="true"></i>Q
             </button>
-            {errors.form && (
-              <span className="alert alert-danger">
-                {this.state.errors.form}
-              </span>
+
+            {errors.srchStr && (
+              <span className="help-block">{errors.srchStr}</span>
             )}
-            {errors.name && <span className="help-block">{errors.name}</span>}
-          </form>
+          </div>
         </div>
         <div className="page-top-cmds">
           {/* <input
@@ -149,18 +179,34 @@ class EventsPage extends Component {
                 \/
               </button>
               {this.state.showChgCity ? (
-                <div>
+                <div
+                  className={classnames("form-group", {
+                    "has-error": errors.defaultCity
+                  })}
+                >
                   <input
+                    type="text"
                     name="defaultCity"
                     placeholder="change default city"
                     onChange={this.onChange}
+                    value={this.state.defaultCity}
+                  />
+                  <input
+                    type="text"
+                    name="defaultState"
+                    placeholder="change default State"
+                    onChange={this.onChange}
+                    value={this.state.defaultState}
                   />
                   <button
                     className="btn btn-primary btn-sm"
-                    onClick={() => this.onChgDefaultCity()}
+                    onClick={() => this.onSaveDefaultCity()}
                   >
                     Submit
                   </button>
+                  {errors.defaultCity && (
+                    <span className="help-block">{errors.defaultCity}</span>
+                  )}
                 </div>
               ) : null}
               {categories.list ? (
@@ -204,7 +250,7 @@ class EventsPage extends Component {
           </Link>
         </div> */}
 
-        {events.list ? (
+        {events.list && events.list.length > 0 ? (
           <div>
             {this.props.events.list.map(event => (
               <EventItem key={event._id} event={event} />

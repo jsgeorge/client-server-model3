@@ -20,32 +20,54 @@ const router = require("express").Router();
 router.get("/", (req, res) => {
   const srchStr = req.query.srchStr;
   const category = req.query.category;
-  const filters = {};
-  const city = "";
+  let filters = {};
+  let city = "";
   Setting.findOne({ uid: req.query.uid }, (err, setting) => {
     if (err) {
+      console.log(err);
     }
-    if (setting && setting.filterCity) city = setting.filterCity;
 
+    if (setting && setting.filterCity) {
+      city = setting.filterCity;
+    }
+    console.log("city", city);
+    console.log("srchStr", srchStr);
+    console.log("category", category);
     if (category) {
       if (city) {
         filters = { city: city, category: category };
       } else {
         filter = { category: category };
       }
+      Event.find(filters, (err, events) => {
+        if (err) return res.status(400).send(err);
+        return res.status(200).send(events);
+      });
     } else if (srchStr) {
       const str = `/${srchStr}/`;
+      console.log(str);
+      let filter;
       if (city) {
-        filters = { city: city, name: { $regex: str } };
+        filter = { city: city, name: { $regex: ".*srchStr." } };
+        console.log(filter);
+        Event.find(filter, (err, events) => {
+          if (err) return res.status(400).send(err);
+          return res.status(200).send(events);
+        });
       } else {
-        filter = { name: { $regex: str } };
+        filter = `{ name: { $regex: /${srchStr}/ } }`;
+        Event.find(filter, (err, events) => {
+          if (err) return res.status(400).send(err);
+          return res.status(200).send(events);
+        });
       }
+    } else {
+      Event.find({}, (err, events) => {
+        if (err) return res.status(400).send(err);
+        return res.status(200).send(events);
+      });
     }
 
-    Event.find(filters, (err, events) => {
-      if (err) return res.status(400).send(err);
-      return res.status(200).send(events);
-    });
     // if (setting && setting.filterCity) {
     //   const city = setting.filterCity;
     //   if (srchStr) {
