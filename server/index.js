@@ -23,11 +23,10 @@ app.use(bodyParser.json());
 app.use("/api/users", users);
 app.use("/api/auth", auth);
 app.use("/api/events", events);
-app.use("/api/events/byCity", events);
 app.use("/api/events/id", events);
 app.use("/api/events/update", events);
 app.use("/api/categories", categories);
-app.use("/api/settings", settings);
+app.use("/api/settings/", settings);
 app.use("/api/settings/chgDefaultCity", settings);
 
 const port = process.env.PORT || 3002;

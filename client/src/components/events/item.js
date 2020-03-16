@@ -9,10 +9,11 @@ const EventItem = ({ event }) => {
         </div>
         <div className="col-9">
           <Link to={`/events/${event._id}`}>
-            <h6 style={{ fontWeight: "normal" }}>
+            <p
+              style={{ fontWeight: "normal", color: "#555", fontSize: "18px" }}
+            >
               <strong>{event.name}</strong>
-            </h6>
-            <p>
+              <br />
               {event.eventTime} - {event.location} <br /> {event.city},
               {event.state}
             </p>

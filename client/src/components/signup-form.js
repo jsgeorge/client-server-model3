@@ -12,7 +12,7 @@ class SignupForm extends React.Component {
     super(props);
     this.state = {
       username: "",
-      email: "",
+      identifier: "",
       password: "",
       passwordConfirmation: "",
       timezone: "",
@@ -30,16 +30,41 @@ class SignupForm extends React.Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  //   isValid() {
-  //     const { errors, isValid } = validateInput(this.state);
-
-  //     if (!isValid) {
-  //       this.setState({ errors });
-  //     }
-
-  //     return isValid;
-  //   }
-
+  isValidEntries() {
+    let errors = {};
+    const {
+      identifier,
+      password,
+      passwordConfirmation,
+      username,
+      timezone
+    } = this.state;
+    if (!identifier) {
+      errors.identifier = "Missing/invalid email";
+    }
+    if (!password) {
+      errors.password = "Missing/invalid passworrd";
+    }
+    if (!passwordConfirmation) {
+      errors.passwordConfirmation = "Missing/invalid passworrd confirm";
+    }
+    if (password != passwordConfirmation) {
+      errors.passwordConfirmation = "Passwords don't match";
+    }
+    if (!username) {
+      errors.username = "Missing/invalid username";
+    }
+    if (!timezone) {
+      errors.timezone = "Time zone not selected";
+    }
+    // if (errors) {
+    this.setState({ errors });
+    //   return false;
+    // }
+    // return true;
+    const isValid = Object.keys(errors).length === 0;
+    return isValid;
+  }
   //   checkUserExists(e) {
   //     const field = e.target.name;
   //     const val = e.target.value;
@@ -61,17 +86,25 @@ class SignupForm extends React.Component {
 
   onSubmit(e) {
     e.preventDefault();
-    // if (this.isValid()) {
-    this.setState({ errors: {}, isLoading: true });
-    this.props.userSignupRequest(this.state).then(
-      res => this.props.history.push("/"),
-      err => this.setState({ errors: err.response.data, isLoading: false })
-    );
-    // }
+    if (this.isValidEntries()) {
+      this.setState({ errors: {}, isLoading: true });
+      this.props.userSignupRequest(this.state).then(
+        res => this.props.history.push("/events"),
+        err => this.setState({ errors: err.response.data, isLoading: false })
+      );
+    }
   }
 
   render() {
-    const { errors } = this.state;
+    const {
+      errors,
+      identifier,
+      password,
+      passwordConfirmation,
+      username,
+      timezone,
+      isLoading
+    } = this.state;
     const options = map(timezones, (val, key) => (
       <option key={val} value={val}>
         {key}
@@ -80,30 +113,21 @@ class SignupForm extends React.Component {
     return (
       <form onSubmit={this.onSubmit}>
         <h1>Join our community!</h1>
+        {errors.form && <div className="alert alert-danger">{errors.form}</div>}
 
         <TextFieldGroup
-          error={errors.username}
-          label="Username"
+          field="identifier"
+          label=" Email"
+          value={identifier}
+          error={errors.identifier}
           onChange={this.onChange}
-          //checkUserExists={this.checkUserExists}
-          value={this.state.username}
-          field="username"
-        />
-
-        <TextFieldGroup
-          error={errors.email}
-          label="Email"
-          onChange={this.onChange}
-          //checkUserExists={this.checkUserExists}
-          value={this.state.email}
-          field="email"
         />
 
         <TextFieldGroup
           error={errors.password}
           label="Password"
           onChange={this.onChange}
-          value={this.state.password}
+          value={password}
           field="password"
           type="password"
         />
@@ -112,11 +136,18 @@ class SignupForm extends React.Component {
           error={errors.passwordConfirmation}
           label="Password Confirmation"
           onChange={this.onChange}
-          value={this.state.passwordConfirmation}
+          value={passwordConfirmation}
           field="passwordConfirmation"
           type="password"
         />
-
+        <TextFieldGroup
+          error={errors.username}
+          label="Username"
+          onChange={this.onChange}
+          //checkUserExists={this.checkUserExists}
+          value={username}
+          field="username"
+        />
         <div
           className={classnames("form-group", { "has-error": errors.timezone })}
         >
@@ -125,7 +156,7 @@ class SignupForm extends React.Component {
             className="form-control"
             name="timezone"
             onChange={this.onChange}
-            value={this.state.timezone}
+            value={timezone}
           >
             <option value="" disabled>
               Choose Your Timezone

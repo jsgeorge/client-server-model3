@@ -1,6 +1,6 @@
 const { Event } = require("../models/events");
-const { authenticate } = require("../middleware/authenticate");
-const { Setting } = require("../models/settings");
+//const { authenticate } = require("../middleware/authenticate");
+//const { Setting } = require("../models/settings");
 
 const router = require("express").Router();
 
@@ -18,82 +18,97 @@ const router = require("express").Router();
 //   });
 // });
 router.get("/", (req, res) => {
-  const srchStr = req.query.srchStr;
-  const category = req.query.category;
   let filters = {};
   let city = "";
-  Setting.findOne({ uid: req.query.uid }, (err, setting) => {
-    if (err) {
-      console.log(err);
-    }
+  let state = "";
+  let category = "";
+  let srchStr = "";
+  if (req.query.city) city = req.query.city;
+  if (req.query.state) state = req.query.state;
+  if (req.query.category) category = req.query.category;
+  else if (req.query.srchStr) srchStr = req.query.srchStr;
 
-    if (setting && setting.filterCity) {
-      city = setting.filterCity;
-    }
-    console.log("city", city);
-    console.log("srchStr", srchStr);
-    console.log("category", category);
-    if (category) {
-      if (city) {
-        filters = { city: city, category: category };
-      } else {
-        filter = { category: category };
-      }
-      Event.find(filters, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
-    } else if (srchStr) {
-      const str = `/${srchStr}/`;
-      console.log(str);
-      let filter;
-      if (city) {
-        filter = { city: city, name: { $regex: ".*srchStr." } };
-        console.log(filter);
-        Event.find(filter, (err, events) => {
-          if (err) return res.status(400).send(err);
-          return res.status(200).send(events);
-        });
-      } else {
-        filter = `{ name: { $regex: /${srchStr}/ } }`;
-        Event.find(filter, (err, events) => {
-          if (err) return res.status(400).send(err);
-          return res.status(200).send(events);
-        });
-      }
-    } else {
-      Event.find({}, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
-    }
-
-    // if (setting && setting.filterCity) {
-    //   const city = setting.filterCity;
-    //   if (srchStr) {
-    //     const str = `/${srchStr}/`;
-    //     Event.find({ city: city, name: { $regex: str } }, (err, events) => {
-    //       if (err) return res.status(400).send(err);
-    //       return res.status(200).send(events);
-    //     });
-    //   } else if (category) {
-    //     Event.find({ city: city, category: category }, (err, events) => {
-    //       if (err) return res.status(400).send(err);
-    //       return res.status(200).send(events);
-    //     });
-    //   } else {
-    //     Event.find({ city: city }, (err, events) => {
-    //       if (err) return res.status(400).send(err);
-    //       return res.status(200).send(events);
-    //     });
-    //   }
-    // } else {
-    //   Event.find({}, (err, events) => {
-    //     if (err) return res.status(400).send(err);
-    //     return res.status(200).send(events);
-    //   });
-    // }
+  if (category) {
+    if (city && state) {
+      filters = { city: city, state: state, category: category };
+    } else filters = { category: category };
+  } else if (srchStr) {
+    if (city && state)
+      filters = {
+        city: city,
+        state: state,
+        name: { $regex: "/*" + srchStr + "/*" }
+      };
+    else filters = { name: { $regex: "/*" + srchStr + "/*" } };
+  } else {
+    if (city && state) filters = { city: city, state: state };
+  }
+  Event.find(filters, (err, events) => {
+    if (err) return res.status(400).send(err);
+    return res.status(200).send(events);
   });
+
+  // Setting.findOne({ uid: uid }, (err, setting) => {
+  //   if (err) {
+  //     return res.status(400).send(err);
+  //   }
+  //   console.log(setting);
+  //   if (setting && setting.filterCity) {
+  //     city = setting.filterCity;
+  //     state = setting.filterState;
+  //     console.log(city, state);
+  //   }
+  //   if (category) {
+  //     if (city) {
+  //       filters = { city: city, state: state, category: category };
+  //     } else {
+  //       filters = { category: category };
+  //     }
+  //   } else if (srchStr) {
+  //     if (city) {
+  //       filters = {
+  //         city: city,
+  //         state: state,
+  //         name: { $regex: "/*" + srchStr + "/*" }
+  //       };
+  //     } else {
+  //       filters = { name: { $regex: "/*" + srchStr + "/*" } };
+  //     }
+  //   } else {
+  //     if (city) {
+  //       filters = { city: city, state: state };
+  //     } else filters = {};
+  //   }
+  //   Event.find(filters, (err, events) => {
+  //     if (err) return res.status(400).send(err);
+  //     return res.status(200).send(events);
+  //   });
+  // if (setting && setting.filterCity) {
+  //   const city = setting.filterCity;
+  //   if (srchStr) {
+  //     const str = `/${srchStr}/`;
+  //     Event.find({ city: city, name: { $regex: str } }, (err, events) => {
+  //       if (err) return res.status(400).send(err);
+  //       return res.status(200).send(events);
+  //     });
+  //   } else if (category) {
+  //     Event.find({ city: city, category: category }, (err, events) => {
+  //       if (err) return res.status(400).send(err);
+  //       return res.status(200).send(events);
+  //     });
+  //   } else {
+  //     Event.find({ city: city }, (err, events) => {
+  //       if (err) return res.status(400).send(err);
+  //       return res.status(200).send(events);
+  //     });
+  //   }
+  // } else {
+  //   Event.find({}, (err, events) => {
+  //     if (err) return res.status(400).send(err);
+  //     return res.status(200).send(events);
+  //   });
+  // }
+  //});
 });
 router.get("/id", (req, res) => {
   let id = req.query.id;
@@ -110,9 +125,10 @@ function validate(data) {
   const isValid = Object.keys(errors).length === 0;
   return { errors, isValid };
 }
-router.post("/", authenticate, (req, res) => {
+router.post("/", (req, res) => {
   console.log(req.body);
   const { errors, isValid } = validate(req.body);
+  const { name, location, eventTime, eventDate } = req.body;
 
   if (!isValid) {
     return res.status(401).json({ errors: { form: errors } });
@@ -120,25 +136,35 @@ router.post("/", authenticate, (req, res) => {
   const event = new Event(req.body);
   console.log(event);
   //res.status(201).json({ success: true });
-  Event.findOne({ name: req.body.name }, function(err, existingUser) {
-    if (err) {
-      return res.status(401).json({ errors: { form: err } });
-    }
-    if (existingUser) {
-      return res.status(422).json({ errors: { form: "Event already exists" } });
-    }
-
-    event.save(function(err) {
+  Event.findOne(
+    {
+      name: name,
+      location: location,
+      eventTime: eventTime,
+      eventDate: eventDate
+    },
+    function(err, existingEvent) {
       if (err) {
-        if (err) res.status(423).json({ errors: { form: err } });
+        return res.status(401).json({ errors: { form: err } });
       }
-      res.status(200).json({ success: true });
-    });
-  });
+      if (existingEvent) {
+        return res
+          .status(422)
+          .json({ errors: { form: "Event already exists" } });
+      }
+
+      event.save(function(err) {
+        if (err) {
+          return res.status(423).json({ errors: { form: err } });
+        }
+        res.status(200).json({ success: true });
+      });
+    }
+  );
 });
-router.post("/update", authenticate, (req, res) => {
+router.post("/update", (req, res) => {
   let id = req.query.id;
-  console.log("updating record", id);
+  const { name, location, eventTime, eventDate } = req.body;
 
   const { errors, isValid } = validate(req.body);
 
@@ -148,23 +174,23 @@ router.post("/update", authenticate, (req, res) => {
   // }
 
   //res.status(201).json({ success: true });
-  Event.findOne({ name: req.body.name }, function(err, existingUser) {
-    if (err) {
-      console.log("error", err);
-      return res.status(421).json({ success: false, err });
-    }
-    if (existingUser) {
-      console.log("error", "Event already exists");
-      return res.status(422).send({ err: "Event already exists" });
-    }
-  });
+  // Event.findOne({ _id: id }, function(err, existingEvent) {
+  //   if (err) {
+  //     console.log("error", err);
+  //     return res.status(421).json({ success: false, err });
+  //   }
+  //   if (existingEvent) {
+  //     console.log("error", "Event already exists");
+  //     return res.status(422).send({ err: "Event already exists" });
+  //   }
+  // });
 
   Event.findOneAndUpdate(
     { _id: id },
     { $set: req.body },
     { new: true },
     (err, doc) => {
-      if (err) return res.satus(402).json({ success: false, err });
+      if (err) return res.satus(402).json({ errors: { form: err } });
       res.status(200).json({ success: true });
     }
   );

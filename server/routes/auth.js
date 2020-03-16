@@ -4,17 +4,17 @@ const User = require("../models/users");
 
 const router = require("express").Router();
 
-function tokenForUser(user) {
-  const timestamp = new Date().getTime();
-  return jwt.encode({ id: user.id, username: user.username }, config.secret);
-  // return jwt.sign(
-  //   {
-  //     id: user.id,
-  //     username: user.username
-  //   },
-  //   config.secret
-  // );
-}
+// function tokenForUser(user) {
+//   const timestamp = new Date().getTime();
+//   return jwt.encode({ id: user.id, username: user.username }, config.secret);
+//   // return jwt.sign(
+//   //   {
+//   //     id: user.id,
+//   //     username: user.username
+//   //   },
+//   //   config.secret
+//   // );
+// }
 
 router.post("/", (req, res) => {
   const { identifier, password } = req.body;
@@ -29,8 +29,22 @@ router.post("/", (req, res) => {
           errors: { form: "Login failed, Wrong password" }
         });
 
-      res.status(200).json({
-        token: tokenForUser(user)
+      // res.status(200).json({
+      //   token: tokenForUser(user)
+      // });
+      user.generateToken((err, user) => {
+        if (err) {
+          return res.status(400).json({ errors: { form: err } });
+        }
+        res.status(200).json({
+          loginSuccess: true,
+          token: user.token
+        });
+        // .cookie("w_auth", user.token)
+        // .status(200)
+        // .json({
+        //   loginSuccess: true
+        // });
       });
     });
   });
