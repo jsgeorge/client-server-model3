@@ -1,5 +1,5 @@
 const { Event } = require("../models/events");
-//const { authenticate } = require("../middleware/authenticate");
+const { authenticate } = require("../middleware/authenticate");
 //const { Setting } = require("../models/settings");
 
 const router = require("express").Router();
@@ -17,14 +17,14 @@ const router = require("express").Router();
 //     return res.status(200).send(events);
 //   });
 // });
-router.get("/", (req, res) => {
+router.get("/", authenticate, (req, res) => {
   let filters = {};
   let city = "";
   let state = "";
   let category = "";
   let srchStr = "";
-  if (req.query.city) city = req.query.city;
-  if (req.query.state) state = req.query.state;
+  if (req.currentUser.defaultCity) city = req.currentUser.defaultCity;
+  if (req.currentUser.defaultState) state = req.currentUser.defaultState;
   if (req.query.category) category = req.query.category;
   else if (req.query.srchStr) srchStr = req.query.srchStr;
 
@@ -37,7 +37,10 @@ router.get("/", (req, res) => {
       filters = {
         city: city,
         state: state,
-        name: { $regex: "/*" + srchStr + "/*" }
+        $or: [
+          { name: { $regex: "/*" + srchStr + "/*" } },
+          { location: { $regex: "/*" + srchStr + "/*" } }
+        ]
       };
     else filters = { name: { $regex: "/*" + srchStr + "/*" } };
   } else {
@@ -125,16 +128,35 @@ function validate(data) {
   const isValid = Object.keys(errors).length === 0;
   return { errors, isValid };
 }
-router.post("/", (req, res) => {
-  console.log(req.body);
-  const { errors, isValid } = validate(req.body);
-  const { name, location, eventTime, eventDate } = req.body;
-
-  if (!isValid) {
-    return res.status(401).json({ errors: { form: errors } });
-  }
-  const event = new Event(req.body);
-  console.log(event);
+router.post("/", authenticate, (req, res) => {
+  // res.status(200).json({ success: true, user: req.currentUser });
+  //const { errors, isValid } = validate(req.body);
+  const {
+    name,
+    location,
+    eventTime,
+    eventDate,
+    address,
+    city,
+    state,
+    description
+  } = req.body;
+  // if (!isValid) {
+  //   return res.status(401).json({ errors: { form: errors } });
+  // }
+  let newEvent = {
+    name: name,
+    location: location,
+    eventTime: eventTime,
+    eventDate: eventDate,
+    address: address,
+    city: city,
+    state: state,
+    description: description,
+    username: req.currentUser.username,
+    uid: req.currentUser._id
+  };
+  const event = new Event(newEvent);
   //res.status(201).json({ success: true });
   Event.findOne(
     {
@@ -152,7 +174,6 @@ router.post("/", (req, res) => {
           .status(422)
           .json({ errors: { form: "Event already exists" } });
       }
-
       event.save(function(err) {
         if (err) {
           return res.status(423).json({ errors: { form: err } });

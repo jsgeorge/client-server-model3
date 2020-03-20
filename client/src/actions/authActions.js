@@ -2,6 +2,7 @@ import axios from "axios";
 import setAuthorizationToken from "../utils/setAuthorizationToken";
 import { SET_CURRENT_USER } from "./types";
 import jwtDecode from "jwt-decode";
+//import jwt from 'jsonwebtoken';
 
 export function login(data) {
   return dispatch => {

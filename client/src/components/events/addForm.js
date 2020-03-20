@@ -14,7 +14,6 @@ class AddEventForm extends Component {
     this.state = {
       name: "",
       category: "",
-      username: "",
       eventDate: "",
       eventTime: "",
       city: "",
@@ -30,7 +29,7 @@ class AddEventForm extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
   componentDidMount() {
-    this.setState({ username: this.props.user.username });
+    //this.setState({ username: this.props.user.username });
     this.props.getCategories();
   }
   onChange(e) {
@@ -93,13 +92,13 @@ class AddEventForm extends Component {
   }
   onSubmit(e) {
     e.preventDefault();
-    if (this.isValidEntries()) {
-      this.setState({ errors: {}, isLoading: true });
-      this.props.addEvent(this.state).then(
-        res => this.props.history.push("/events"),
-        err => this.setState({ errors: err.response.data, isLoading: false })
-      );
-    }
+    //if (this.isValidEntries()) {
+    this.setState({ errors: {}, isLoading: true });
+    this.props.addEvent(this.state).then(
+      res => this.props.history.push("/events"),
+      err => this.setState({ errors: err.response.data, isLoading: false })
+    );
+    //}
   }
   showCategoryButtons = name => (
     <span>
@@ -127,7 +126,6 @@ class AddEventForm extends Component {
             <div
               className={classnames("form-group", { "has-error": errors.name })}
             >
-              <label className="control-label">Category</label>
               <select
                 className="form-control"
                 onChange={this.onChange}
@@ -135,7 +133,7 @@ class AddEventForm extends Component {
                 value={this.state.category}
                 name="category"
               >
-                <option value="">Select event category</option>
+                <option value="">Event category</option>
                 {this.props.categories.list.map(c => (
                   <option key={c._id} value={c.name}>
                     {c.name}

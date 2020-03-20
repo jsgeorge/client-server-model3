@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import { getEvents } from "../../actions/eventActions";
 import { chgDefaultCity } from "../../actions/settingsActions";
 import { getCategories } from "../../actions/categoryActons";
+import { getSettings } from "../../actions/settingsActions";
+
 import classnames from "classnames";
 
 import EventItem from "./item";
@@ -32,14 +34,15 @@ class EventsPage extends Component {
     const { user } = this.props.auth;
     let uid = user.id;
     // this.props.getEvents({ uid: uid });
-    if (user.defaultCity) {
-      this.props.getEvents({
-        city: user.defaultCity,
-        state: user.defaultState
-      });
-    } else {
-      this.props.getEvents({});
-    }
+    // if (user.defaultCity) {
+    //this.props.getEvents({
+    // city: user.defaultCity,
+    // state: user.defaultState
+    //   });
+    // } else {
+    this.props.getSettings();
+    this.props.getEvents({});
+    //}
   }
 
   onChange(e) {
@@ -82,14 +85,12 @@ class EventsPage extends Component {
     return isValid;
   }
   clearState = () => {
-    this.setState({ defaultCity: "", srchStr: "", error: {} });
+    this.setState({ category: "", srchStr: "", error: {} });
   };
   onSearch = () => {
     if (this.isValidEntriesSrch()) {
       this.setState({ errors: {}, isLoading: true });
       this.props.getEvents({
-        city: this.props.auth.user.defaultCity,
-        state: this.props.auth.user.defaultState,
         srchStr: this.state.srchStr
       });
     }
@@ -101,22 +102,20 @@ class EventsPage extends Component {
     if (this.isValidEntriesCity()) {
       const { defaultCity, defaultState } = this.state;
       this.setState({ errors: {}, isLoading: true });
-      this.props.chgDefaultCity({
-        defaultCity: defaultCity,
-        defaultState: defaultState,
-        uid: this.props.auth.user.id
-      });
-      //   .then(
-      //     res => {
-      //       console.log("Change city successful");
-      //       this.setState({ showChgCity: false });
-      //       this.props.getEvents({
-      //         city: this.state.defaultCity,
-      //         state: this.state.defaultState
-      //       });
-      //     },
-      //     err => this.setState({ errors: err.response.data, isLoading: false })
-      //   );
+      this.props
+        .chgDefaultCity({
+          defaultCity: defaultCity,
+          defaultState: defaultState
+        })
+        .then(
+          res => {
+            console.log("Change city successful");
+            this.setState({ showChgCity: false });
+            this.props.getSettings();
+            this.props.getEvents({});
+          },
+          err => this.setState({ errors: err.response.data, isLoading: false })
+        );
     } else {
       console.log("Invalid Entry");
     }
@@ -124,23 +123,17 @@ class EventsPage extends Component {
   onFilterCategory = name => {
     this.setState({ category: name });
     this.props.getEvents({
-      category: name,
-      city: this.props.auth.user.defaultCity,
-      state: this.props.auth.user.defaultState
+      category: name
     });
   };
   onClearFilters = () => {
     this.setState({ srchStr: "" });
-    this.props.getEvents({
-      city: this.state.defaultCity,
-      state: this.state.defaultState
-    });
+    this.props.getEvents({});
   };
   render() {
     const { errors } = this.state;
-    const { events, categories } = this.props;
-    const { defaultCity, defaultState } = this.props.auth.user;
-
+    const { events, categories, settings } = this.props;
+    //const { defaultCity, defaultState } = this.props.settings.setting;
     return (
       <div className="events-wrapper">
         <div className="page-top-cmds">
@@ -149,25 +142,26 @@ class EventsPage extends Component {
               "has-error": errors.srchStr
             })}
           >
+            <button
+              className="btn-transparent btnSearch"
+              onClick={() => this.onSearch()}
+            >
+              <i className="fa fa-search" aria-hidden="true"></i>Q
+            </button>
             <input
               type="text"
-              style={{ width: "85%", border: "1px solid #ccc" }}
+              className="searchBar"
               placeholder="Search events, venues, cities"
               name="srchStr"
               value={this.state.srchStr}
               onChange={this.onChange}
             />
+
             <button
-              className="btn btn-default btn-sm"
-              onClick={() => this.onSearch()}
-            >
-              <i className="fa fa-search" aria-hidden="true"></i>Q
-            </button>
-            <button
-              className="btn btn-default btn-sm"
+              className="btn-transparent btnClear"
               onClick={() => this.onClearFilters()}
             >
-              <i className="fa fa-search" aria-hidden="true"></i>X
+              <i className="fa fa-clear" aria-hidden="true"></i>x
             </button>
             {errors.srchStr && (
               <span className="help-block">{errors.srchStr}</span>
@@ -183,9 +177,10 @@ class EventsPage extends Component {
 
           <div className="filterCmds">
             <h6>
-              {defaultCity ? (
+              {settings && settings.setting && settings.setting.defaultCity ? (
                 <span className="ctryFont">
-                  {defaultCity}, {defaultState}
+                  {settings.setting.defaultCity},{" "}
+                  {settings.setting.defaultState}
                 </span>
               ) : (
                 <span>No location set</span>
@@ -220,20 +215,22 @@ class EventsPage extends Component {
                   >
                     <input
                       type="text"
+                      className="chgCityBar"
                       name="defaultCity"
-                      placeholder="change default city"
+                      placeholder=" default city"
                       onChange={this.onChange}
                       value={this.state.defaultCity}
                     />
                     <input
                       type="text"
+                      className="chgStateBar"
                       name="defaultState"
-                      placeholder="change default State"
+                      placeholder="default State"
                       onChange={this.onChange}
                       value={this.state.defaultState}
                     />
                     <button
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-danger btn-sm"
                       onClick={() => this.onSaveDefaultCity()}
                     >
                       Submit
@@ -244,6 +241,7 @@ class EventsPage extends Component {
                   </div>
                 </div>
               ) : null}
+              <br />
               {categories.list ? (
                 <span className="ctgryBtns">
                   <button
@@ -290,12 +288,14 @@ function mapStateToProps(state) {
     auth: state.auth,
     user: state.auth.user,
     events: state.events,
-    categories: state.categories
+    categories: state.categories,
+    settings: state.settings
   };
 }
 
 export default connect(mapStateToProps, {
   getEvents,
   getCategories,
+  getSettings,
   chgDefaultCity
 })(withRouter(EventsPage));

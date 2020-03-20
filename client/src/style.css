@@ -44,11 +44,49 @@ a:hover {
 }
 .ctryFont {
   font-size: 20px;
+  font-weight: bold;
 }
 .filterCmds {
   border-top: "1px solid #ccc";
   border-bottom: "1px solid #ccc";
 }
-
+.btn-transparent {
+  background: transparent;
+  border: none;
+  padding: 3px;
+  color: #111;
+  min-width: 30px;
+}
+.searchBar {
+  width: 80%;
+  max-width: 600px;
+  border: none;
+  background: #eee;
+  padding: 4px 15px;
+  border-radius: 5px;
+}
+.chgCityBar {
+  width: 50%;
+  border: none;
+  background: #eee;
+  padding: 6px 15px;
+  border-radius: 5px;
+  margin-right: 3px;
+}
+.chgStateBar {
+  width: 30%;
+  border: none;
+  background: #eee;
+  padding: 6px 15px;
+  border-radius: 5px;
+}
+.btnSearch {
+  font-size: 18px;
+  font-weight: bold;
+}
+.btnClear {
+  font-size: 25px;
+  font-weight: bold;
+}
 @media (max-width: 500px) {
 }

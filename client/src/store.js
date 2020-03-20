@@ -4,6 +4,7 @@ import Reducers from "./reducers";
 import setAuthorizationToken from "./utils/setAuthorizationToken";
 import jwtDecode from "jwt-decode";
 import { setCurrentUser } from "./actions/authActions";
+//import jwt from 'jsonwebtoken';
 
 const store = createStore(
   Reducers,

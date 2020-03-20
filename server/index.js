@@ -21,13 +21,14 @@ app.use(bodyParser.json());
 
 //Routes middleware
 app.use("/api/users", users);
+app.use("/api/users/auth", users);
 app.use("/api/auth", auth);
 app.use("/api/events", events);
 app.use("/api/events/id", events);
 app.use("/api/events/update", events);
 app.use("/api/categories", categories);
 app.use("/api/settings/", settings);
-app.use("/api/settings/chgDefaultCity", settings);
+app.use("/api/user/chgDefaultCity", settings);
 
 const port = process.env.PORT || 3002;
 

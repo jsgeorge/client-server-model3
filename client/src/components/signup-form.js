@@ -16,6 +16,8 @@ class SignupForm extends React.Component {
       password: "",
       passwordConfirmation: "",
       timezone: "",
+      defaultCity: "",
+      defaultState: "",
       errors: {},
       isLoading: false,
       invalid: false
@@ -37,7 +39,9 @@ class SignupForm extends React.Component {
       password,
       passwordConfirmation,
       username,
-      timezone
+      timezone,
+      defaultState,
+      defaultCity
     } = this.state;
     if (!identifier) {
       errors.identifier = "Missing/invalid email";
@@ -56,6 +60,12 @@ class SignupForm extends React.Component {
     }
     if (!timezone) {
       errors.timezone = "Time zone not selected";
+    }
+    if (!defaultCity) {
+      errors.defaultCity = "Missing/invalid defaultCity";
+    }
+    if (!defaultState) {
+      errors.defaultState = "Missing/invalid defaultState";
     }
     // if (errors) {
     this.setState({ errors });
@@ -103,6 +113,8 @@ class SignupForm extends React.Component {
       passwordConfirmation,
       username,
       timezone,
+      defaultCity,
+      defaultState,
       isLoading
     } = this.state;
     const options = map(timezones, (val, key) => (
@@ -151,7 +163,6 @@ class SignupForm extends React.Component {
         <div
           className={classnames("form-group", { "has-error": errors.timezone })}
         >
-          <label className="control-label">Timezone</label>
           <select
             className="form-control"
             name="timezone"
@@ -167,7 +178,22 @@ class SignupForm extends React.Component {
             <span className="help-block">{errors.timezone}</span>
           )}
         </div>
-
+        <TextFieldGroup
+          error={errors.defaultCity}
+          label="Your City"
+          onChange={this.onChange}
+          //checkUserExists={this.checkUserExists}
+          value={defaultCity}
+          field="defaultCity"
+        />
+        <TextFieldGroup
+          error={errors.defaultState}
+          label="Your State"
+          onChange={this.onChange}
+          //checkUserExists={this.checkUserExists}
+          value={defaultState}
+          field="defaultState"
+        />
         <div className="form-group">
           <button
             disabled={this.state.isLoading || this.state.invalid}
