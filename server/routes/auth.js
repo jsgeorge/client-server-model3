@@ -41,6 +41,7 @@ router.post("/", (req, res) => {
         if (err) {
           return res.status(404).json({ errors: { form: err } });
         }
+        console.log("Login successfull")
         res.status(200).json({
           loginSuccess: true,
           token: user.token

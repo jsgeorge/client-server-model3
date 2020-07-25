@@ -20,7 +20,7 @@ class SignupForm extends React.Component {
       defaultState: "",
       errors: {},
       isLoading: false,
-      invalid: false
+      invalid: false,
     };
 
     this.onChange = this.onChange.bind(this);
@@ -41,7 +41,7 @@ class SignupForm extends React.Component {
       username,
       timezone,
       defaultState,
-      defaultCity
+      defaultCity,
     } = this.state;
     if (!identifier) {
       errors.identifier = "Missing/invalid email";
@@ -99,8 +99,9 @@ class SignupForm extends React.Component {
     if (this.isValidEntries()) {
       this.setState({ errors: {}, isLoading: true });
       this.props.userSignupRequest(this.state).then(
-        res => this.props.history.push("/events"),
-        err => this.setState({ errors: err.response.data, isLoading: false })
+        (res) => this.props.history.push("/events"),
+        (err) =>
+          this.setState({ errors: err.response.data.errors, isLoading: false })
       );
     }
   }
@@ -115,7 +116,7 @@ class SignupForm extends React.Component {
       timezone,
       defaultCity,
       defaultState,
-      isLoading
+      isLoading,
     } = this.state;
     const options = map(timezones, (val, key) => (
       <option key={val} value={val}>
@@ -197,7 +198,7 @@ class SignupForm extends React.Component {
         <div className="form-group">
           <button
             disabled={this.state.isLoading || this.state.invalid}
-            className="btn btn-primary btn-lg"
+            className="btn btn-danger btn-lg"
           >
             Sign up
           </button>

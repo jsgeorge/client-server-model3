@@ -10,40 +10,40 @@ const userSchema = mongoose.Schema({
     type: String,
     require: true,
     trim: true,
-    unique: 1
+    unique: 1,
   },
   password: {
     type: String,
     require: true,
-    minlength: 5
+    minlength: 5,
   },
   username: {
     type: String,
     require: true,
     trim: true,
-    unique: 1
+    unique: 1,
   },
   timezone: {
     type: String,
-    trim: true
+    trim: true,
   },
   defaultCity: {
-    type: String
+    type: String,
   },
   defaultState: {
-    type: String
-  }
+    type: String,
+  },
 });
 
-userSchema.pre("save", function(next) {
+userSchema.pre("save", function (next) {
   var user = this;
 
   if (user.isModified("password")) {
-    bcrypt.genSalt(SALT_I, function(err, salt) {
+    bcrypt.genSalt(SALT_I, function (err, salt) {
       if (err) return next(err);
       console.log("SaveUser user.password", user.password);
 
-      bcrypt.hash(user.password, salt, function(err, hash) {
+      bcrypt.hash(user.password, salt, function (err, hash) {
         if (err) return next(err);
         console.log("saveUser hash", hash);
         user.password = hash;
@@ -52,14 +52,14 @@ userSchema.pre("save", function(next) {
     });
   }
 });
-userSchema.methods.comparePassword = function(candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+userSchema.methods.comparePassword = function (candidatePassword, cb) {
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
     console.log(candidatePassword, isMatch);
     if (err) return cb(err);
     cb(null, isMatch);
   });
 };
-userSchema.methods.generateToken = function(cb) {
+userSchema.methods.generateToken = function (cb) {
   var user = this;
 
   const expiresIn = 24 * 60 * 60;
@@ -68,9 +68,6 @@ userSchema.methods.generateToken = function(cb) {
   var token = jwt.sign(
     {
       id: user.id,
-      username: user.username,
-      defaultCity: user.defaultCity,
-      defaultState: user.defaultState
     },
     config.secret
   );
@@ -79,7 +76,7 @@ userSchema.methods.generateToken = function(cb) {
   //   if (err) return cb(err);
   //   cb(null, user);
   // });
-  User.update({ _id: user._id }, user, function(
+  User.update({ _id: user._id }, user, function (
     err,
     numberAffected,
     rawResponse
@@ -88,11 +85,11 @@ userSchema.methods.generateToken = function(cb) {
     cb(null, user);
   });
 };
-userSchema.statics.findByToken = function(token, cb) {
+userSchema.statics.findByToken = function (token, cb) {
   var user = this;
 
-  jwt.verify(token, config.secret, function(err, decode) {
-    user.findOne({ _id: decode }, function(err, user) {
+  jwt.verify(token, config.secret, function (err, decode) {
+    user.findOne({ _id: decode }, function (err, user) {
       if (err) return cb(err);
       cb(null, user);
     });

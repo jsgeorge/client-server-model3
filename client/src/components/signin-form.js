@@ -13,7 +13,7 @@ class SigninForm extends React.Component {
       password: "",
       errors: {},
       isLoading: false,
-      invalid: false
+      invalid: false,
     };
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -45,9 +45,13 @@ class SigninForm extends React.Component {
     if (this.isValidEntries()) {
       this.setState({ errors: {}, isLoading: true });
       this.props.login(this.state).then(
-        res => this.props.history.push("/events"),
-        err =>
-          this.setState({ errors: err.response.data.errors, isLoading: false })
+        (res) => this.props.history.push("/events"),
+        (err) => {
+          this.setState({
+            errors: err.response.data.errors,
+            isLoading: false,
+          });
+        }
       );
     }
   }
@@ -83,7 +87,9 @@ class SigninForm extends React.Component {
         />
 
         <div className="form-group">
-          <button className="btn btn-primary btn-lg" disabled={isLoading}>
+          <button className="btn btn-danger btn-lg">
+            {" "}
+            {/*  disabled={isLoading}> */}
             Login
           </button>
         </div>

@@ -5,8 +5,8 @@ import jwtDecode from "jwt-decode";
 //import jwt from 'jsonwebtoken';
 
 export function login(data) {
-  return dispatch => {
-    return axios.post("/api/auth", data).then(res => {
+  return (dispatch) => {
+    return axios.post("/api/auth", data).then((res) => {
       const token = res.data.token;
       localStorage.setItem("jwtToken", token);
       setAuthorizationToken(token);
@@ -16,25 +16,25 @@ export function login(data) {
 }
 
 export function userSignupRequest(userData) {
-  return dispatch => {
+  return (dispatch) => {
     return axios.post("/api/users", userData);
   };
 }
 
 export function isUserExists(identifier) {
-  return dispatch => {
+  return (dispatch) => {
     return axios.get(`/api/users/${identifier}`);
   };
 }
 export function setCurrentUser(user) {
   return {
     type: SET_CURRENT_USER,
-    user
+    user,
   };
 }
 
 export function logout() {
-  return dispatch => {
+  return (dispatch) => {
     localStorage.removeItem("jwtToken");
     setAuthorizationToken(false);
     dispatch(setCurrentUser({}));

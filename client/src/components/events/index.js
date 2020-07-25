@@ -17,12 +17,13 @@ class EventsPage extends Component {
     this.state = {
       showChgCity: false,
       srchStr: "",
-      category: "",
+      category: "All Categories",
       defaultCity: "",
       defaultState: "",
       errors: {},
       isLoading: false,
-      invalid: false
+      invalid: false,
+      showMenu: false,
     };
     this.onChange = this.onChange.bind(this);
     this.onSearch = this.onSearch.bind(this);
@@ -31,18 +32,8 @@ class EventsPage extends Component {
 
   componentDidMount() {
     this.props.getCategories();
-    const { user } = this.props.auth;
-    let uid = user.id;
-    // this.props.getEvents({ uid: uid });
-    // if (user.defaultCity) {
-    //this.props.getEvents({
-    // city: user.defaultCity,
-    // state: user.defaultState
-    //   });
-    // } else {
     this.props.getSettings();
     this.props.getEvents({});
-    //}
   }
 
   onChange(e) {
@@ -91,7 +82,7 @@ class EventsPage extends Component {
     if (this.isValidEntriesSrch()) {
       this.setState({ errors: {}, isLoading: true });
       this.props.getEvents({
-        srchStr: this.state.srchStr
+        srchStr: this.state.srchStr,
       });
     }
   };
@@ -105,30 +96,37 @@ class EventsPage extends Component {
       this.props
         .chgDefaultCity({
           defaultCity: defaultCity,
-          defaultState: defaultState
+          defaultState: defaultState,
         })
         .then(
-          res => {
+          (res) => {
             console.log("Change city successful");
             this.setState({ showChgCity: false });
             this.props.getSettings();
             this.props.getEvents({});
           },
-          err => this.setState({ errors: err.response.data, isLoading: false })
+          (err) =>
+            this.setState({ errors: err.response.data, isLoading: false })
         );
     } else {
       console.log("Invalid Entry");
     }
   };
-  onFilterCategory = name => {
-    this.setState({ category: name });
+  onFilterCategory = (name) => {
+    this.setState({ category: name, showMenu: false });
     this.props.getEvents({
-      category: name
+      category: name,
     });
   };
   onClearFilters = () => {
     this.setState({ srchStr: "" });
     this.props.getEvents({});
+  };
+  onShowMobileCtgries = () => {
+    this.setState({ showMenu: true });
+  };
+  onHideMobileCtgries = () => {
+    this.setState({ showMenu: false });
   };
   render() {
     const { errors } = this.state;
@@ -139,15 +137,9 @@ class EventsPage extends Component {
         <div className="page-top-cmds">
           <div
             className={classnames("", {
-              "has-error": errors.srchStr
+              "has-error": errors.srchStr,
             })}
           >
-            <button
-              className="btn-transparent btnSearch"
-              onClick={() => this.onSearch()}
-            >
-              <i className="fa fa-search" aria-hidden="true"></i>Q
-            </button>
             <input
               type="text"
               className="searchBar"
@@ -156,35 +148,93 @@ class EventsPage extends Component {
               value={this.state.srchStr}
               onChange={this.onChange}
             />
-
             <button
+              className="btn-transparent btnSearch"
+              onClick={() => this.onSearch()}
+            >
+              <i className="fa fa-search"></i>
+            </button>
+            {/* <button
               className="btn-transparent btnClear"
               onClick={() => this.onClearFilters()}
             >
-              <i className="fa fa-clear" aria-hidden="true"></i>x
-            </button>
+              <i className="fa fa-close"></i>
+            </button> */}
             {errors.srchStr && (
               <span className="help-block">{errors.srchStr}</span>
             )}
           </div>
         </div>
         <div className="page-top-cmds">
-          {/* <input
-            placeholder="filter by city"
-            name="city"
-            onChange={this.onChange}
-          /> */}
+          <div className="filterCmd">
+            {settings && settings.setting && settings.setting.defaultCity ? (
+              <span className="ctryFont">
+                {settings.setting.defaultCity}, {settings.setting.defaultState}
+              </span>
+            ) : (
+              <span>No location set</span>
+            )}
+            <button
+              style={{
+                height: "30px",
+                width: "30",
+                fontSize: "8px",
+                padding: "5px 2px",
+                fontWeight: "bold",
+                margin: "0 5px 0 0",
+                marginRignt: "60px",
+                background: "Transparent",
+              }}
+              className="btn btn-default"
+              onClick={() => this.onShowChgCity()}
+            >
+              \/
+            </button>
+            {this.state.showChgCity ? (
+              <div>
+                {errors.form && (
+                  <div className="alert alert-danger">
+                    {this.state.errors.form}
+                  </div>
+                )}
+                <div
+                  className={classnames("form-group", {
+                    "has-error": errors.defaultCity,
+                  })}
+                >
+                  <input
+                    type="text"
+                    className="chgCityBar"
+                    name="defaultCity"
+                    placeholder=" default city"
+                    onChange={this.onChange}
+                    value={this.state.defaultCity}
+                  />
+                  <input
+                    type="text"
+                    className="chgStateBar"
+                    name="defaultState"
+                    placeholder="default State"
+                    onChange={this.onChange}
+                    value={this.state.defaultState}
+                  />
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => this.onSaveDefaultCity()}
+                  >
+                    Submit
+                  </button>
+                  {errors.defaultCity && (
+                    <span className="help-block">{errors.defaultCity}</span>
+                  )}
+                </div>
+              </div>
+            ) : null}
+          </div>
 
-          <div className="filterCmds">
-            <h6>
-              {settings && settings.setting && settings.setting.defaultCity ? (
-                <span className="ctryFont">
-                  {settings.setting.defaultCity},{" "}
-                  {settings.setting.defaultState}
-                </span>
-              ) : (
-                <span>No location set</span>
-              )}
+          {this.state.category ? (
+            <span className="filterCmd ctryFont mobile">
+              {this.state.category}
               <button
                 style={{
                   height: "30px",
@@ -194,102 +244,99 @@ class EventsPage extends Component {
                   fontWeight: "bold",
                   margin: "0 5px 0 0",
                   marginRignt: "60px",
-                  background: "Transparent"
+                  background: "Transparent",
                 }}
                 className="btn btn-default"
-                onClick={() => this.onShowChgCity()}
+                onClick={() => this.onShowMobileCtgries()}
               >
                 \/
               </button>
-              {this.state.showChgCity ? (
-                <div>
-                  {errors.form && (
-                    <div className="alert alert-danger">
-                      {this.state.errors.form}
-                    </div>
-                  )}
-                  <div
-                    className={classnames("form-group", {
-                      "has-error": errors.defaultCity
-                    })}
-                  >
-                    <input
-                      type="text"
-                      className="chgCityBar"
-                      name="defaultCity"
-                      placeholder=" default city"
-                      onChange={this.onChange}
-                      value={this.state.defaultCity}
-                    />
-                    <input
-                      type="text"
-                      className="chgStateBar"
-                      name="defaultState"
-                      placeholder="default State"
-                      onChange={this.onChange}
-                      value={this.state.defaultState}
-                    />
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => this.onSaveDefaultCity()}
-                    >
-                      Submit
-                    </button>
-                    {errors.defaultCity && (
-                      <span className="help-block">{errors.defaultCity}</span>
-                    )}
-                  </div>
-                </div>
-              ) : null}
-              <br />
-              {categories.list ? (
-                <span className="ctgryBtns">
+            </span>
+          ) : null}
+
+          {categories.list ? (
+            <span
+              className="ctgryBtns desktop"
+              onClick={() => this.onHideMobileCtgries()}
+            >
+              <button
+                className="btn btn-default btn-sm ctgryBtn"
+                onClick={() => this.onFilterCategory()}
+              >
+                All Categories
+              </button>
+              {this.props.categories.list.map((c) => (
+                <button
+                  key={c._id}
+                  className="btn btn-default btn-sm ctgryBtn"
+                  onClick={() => this.onFilterCategory(c.name)}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </span>
+          ) : null}
+          {categories.list && this.state.showMenu ? (
+            <div className="mobile-modal mobile">
+              <span className="ctgryMenu mobile ">
+                <h3>
+                  Categories{" "}
                   <button
-                    className="btn btn-default btn-sm ctgryBtn"
-                    onClick={() => this.onFilterCategory()}
+                    class="btn-mobile-close"
+                    onClick={() => this.onHideMobileCtgries()}
                   >
-                    All
+                    close
                   </button>
-                  {this.props.categories.list.map(c => (
-                    <button
-                      key={c._id}
-                      className="btn btn-default btn-sm ctgryBtn"
-                      onClick={() => this.onFilterCategory(c.name)}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </span>
-              ) : null}
-            </h6>
-          </div>
+                </h3>
+                <button
+                  className="btn btn-default btn-sm ctgryBtn ctgryFont"
+                  onClick={() => this.onFilterCategory()}
+                >
+                  All Categories
+                </button>
+                {this.props.categories.list.map((c) => (
+                  <button
+                    key={c._id}
+                    className="btn btn-default btn-sm ctgryBtn ctgryFont"
+                    onClick={() => this.onFilterCategory(c.name)}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </span>
+            </div>
+          ) : null}
         </div>
-        {/* <div className="page-top-cmds">
-          <Link to="/events/new" className="btn btn-primary">
-            Add Event
-          </Link>
-        </div> */}
-        {this.state.category ? <h4>{this.state.category}</h4> : null}
-        {events.list && events.list.length > 0 ? (
-          <div>
-            {this.props.events.list.map(event => (
-              <EventItem key={event._id} event={event} />
-            ))}
+
+        {this.state.category ? (
+          <h4 className="desktop">{this.state.category}</h4>
+        ) : null}
+
+        {events && events.length > 0 ? (
+          <div className="event-wrapper">
+            <div className="row">
+              {this.props.events.map((event) => (
+                <EventItem key={event._id} event={event} />
+              ))}
+            </div>
           </div>
         ) : (
-          <p>No current events</p>
+          <div className="event-wrapper">
+            <p>No current events</p>
+          </div>
         )}
       </div>
     );
   }
 }
 function mapStateToProps(state) {
+  console.log(state);
   return {
     auth: state.auth,
     user: state.auth.user,
     events: state.events,
     categories: state.categories,
-    settings: state.settings
+    settings: state.settings,
   };
 }
 
@@ -297,5 +344,5 @@ export default connect(mapStateToProps, {
   getEvents,
   getCategories,
   getSettings,
-  chgDefaultCity
+  chgDefaultCity,
 })(withRouter(EventsPage));

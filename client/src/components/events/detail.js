@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getEvent } from "../../actions/eventActions";
+import { getEvent, deleteEvent } from "../../actions/eventActions";
 import { Link } from "react-router-dom";
 
 class EventDetail extends Component {
@@ -10,34 +10,47 @@ class EventDetail extends Component {
   }
   deleteEvent = id => {
     console.log("event id to delete", id);
+    this.props.deleteEvent(id);
+    this.props.history.push("/events");
   };
   render() {
-    const { event } = this.props.events;
+    //const { event } = this.props.events;
 
-    if (!event) return <div>NO Matching event</div>;
+    if (!this.props.event) return <div>NO Matching event</div>;
+    const id = this.props.match.params.id;
+    const {
+      name,
+      category,
+      username,
+      eventDate,
+      eventTime,
+      location,
+      address,
+      city,
+      state,
+      description
+    } = this.props.event;
+
     return (
       <div>
         <div>
-          <h5>{event.name}</h5>
+          <h5>{name}</h5>
           <strong>
-            {event.eventDate} {event.eventTime}
+            {eventDate} {eventTime}
           </strong>
           <p>
-            {event.location} <br />
-            {event.address} <br /> {event.city},{event.state}
+            {location} <br />
+            {address} <br /> {city},{state}
           </p>
-          <p>{event.description}</p>
-          <p>Category: {event.category}</p>
-          {event.username === this.props.user.username ? (
+          <p>{description}</p>
+          <p>Category: {category}</p>
+          {username === this.props.user.username ? (
             <div>
-              <Link
-                to={`/events/edit/${event._id}`}
-                className="btn btn-primary"
-              >
+              <Link to={`/events/edit/${id}`} className="btn btn-primary">
                 Edit
               </Link>
               <button
-                onClick={this.deleteEvent(event._id)}
+                onClick={() => this.deleteEvent(id)}
                 className="btn btn-danger"
               >
                 Delete
@@ -50,11 +63,13 @@ class EventDetail extends Component {
   }
 }
 function mapStateToProps(state, ownProps) {
-  return {
-    auth: state.auth,
-    user: state.auth.user,
-    events: state.events //,
-    //event: state.events.find(item => item._id === ownProps.match.params.id)
-  };
+  if (ownProps.match.params.id)
+    return {
+      auth: state.auth,
+      user: state.auth.user,
+      events: state.events,
+      event: state.event
+      //event: state.events.find(item => item._id === ownProps.match.params.id)
+    };
 }
-export default connect(mapStateToProps, { getEvent })(EventDetail);
+export default connect(mapStateToProps, { getEvent, deleteEvent })(EventDetail);

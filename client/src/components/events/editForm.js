@@ -21,7 +21,7 @@ class EditEventForm extends Component {
       description: "",
       errors: {},
       isLoading: false,
-      invalid: false
+      invalid: false,
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -31,12 +31,8 @@ class EditEventForm extends Component {
     this.props.getEvent(id);
   }
   componentDidMount() {
-    console.log("props", this.props);
+    const { event } = this.props;
 
-    const { event } = this.props.events;
-
-    console.log(event);
-    if (!event) return <div>NO Matching event</div>;
     this.setState({ username: event.username });
     this.setState({ name: event.name });
     this.setState({ category: event.category });
@@ -92,12 +88,14 @@ class EditEventForm extends Component {
     if (this.isValidEntries()) {
       this.setState({ errors: {}, isLoading: true });
       this.props.updateEvent(this.state, this.props.match.params.id).then(
-        res => this.props.history.push("/events"),
-        err => this.setState({ errors: err.response.data, isLoading: false })
+        (res) => this.props.history.push("/events"),
+        (err) => this.setState({ errors: err.response.data, isLoading: false })
       );
     }
   }
   render() {
+    if (!this.props.event) return <div>NO Matching event</div>;
+
     const { errors } = this.state;
     return (
       <div>
@@ -181,7 +179,7 @@ class EditEventForm extends Component {
           <div className="form-group">
             <button
               disabled={this.state.isLoading || this.state.invalid}
-              className="btn btn-primary btn-lg"
+              className="btn btn-danger btn-lg"
             >
               Submit
             </button>
@@ -195,7 +193,7 @@ function mapStateToProps(state) {
   console.log(state);
   return {
     user: state.auth.user,
-    events: state.events
+    event: state.event,
   };
 }
 export default connect(mapStateToProps, { getEvent, updateEvent })(

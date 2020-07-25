@@ -12,19 +12,26 @@ const router = require("express").Router();
 //   return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
 // }
 router.get("/auth", authenticate, (req, res) => {
-  console.log(req.currentUser);
   res.status(200).json({
     isAuth: true,
     email: req.currentUser.email,
     username: req.currentUser.username,
     defaultCity: req.currentUser.defaultCity,
     defaultState: req.currentUser.defaultState,
-    timezone: req.currentUser.timezone
+    timezone: req.currentUser.timezone,
   });
 });
 router.post("/", (req, res) => {
-  const { identifier, password, username, timezone } = req.body;
+  const {
+    identifier,
+    password,
+    username,
+    timezone,
+    defaultCity,
+    defaultState,
+  } = req.body;
   //const password_digest = bcrypt.hashSync(password, 10);
+  console.log(req.body);
 
   const user = new User({
     email: identifier,
@@ -32,18 +39,18 @@ router.post("/", (req, res) => {
     username: username,
     timezone: timezone,
     defaultCity: defaultCity,
-    defaultState: defaultState
+    defaultState: defaultState,
   });
 
-  User.findOne({ email: identifier }, function(err, existingUser) {
+  User.findOne({ email: identifier }, function (err, existingUser) {
     if (err) {
-      return res.status(400).json({ errors: { form: err } });
+      return res.status(400).json({ errors: { form: "Unknown error" } });
     }
     if (existingUser) {
       return res.status(400).json({ errors: { form: "Email already in use" } });
     }
 
-    user.save(function(err) {
+    user.save(function (err) {
       if (err) {
         return res.status(400).json({ errors: { form: err } });
       }
@@ -56,7 +63,7 @@ router.post("/", (req, res) => {
         }
         res.status(200).json({
           success: true,
-          token: user.token
+          token: user.token,
         });
       });
     });
@@ -75,7 +82,7 @@ router.post("/chgDefaultCity", authenticate, (req, res) => {
   console.log(id, req.body.defaultCity, req.body.defaultState);
   let citystate = {
     defaultCity: req.body.defaultCity,
-    defaultState: req.body.defaultState
+    defaultState: req.body.defaultState,
   };
   console.log(citystate);
   User.findOneAndUpdate(

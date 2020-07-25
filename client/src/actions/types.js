@@ -9,3 +9,4 @@ export const GET_EVENT = "get_event";
 export const GET_CATEGORIES = "get_categoreies";
 export const GET_CATEGORY = "get_category";
 export const GET_SETTINGS = "get_settings";
+export const DELETE_EVENT = "delete_event";

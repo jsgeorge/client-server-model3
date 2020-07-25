@@ -12,22 +12,84 @@ class Header extends Component {
     const { isAuthenticated } = this.props.auth;
 
     return (
-      <nav className="navbar navbar-expand-lg navbar-light bg-danger fixed-top">
-        <div className="container-fluid">
-          {!isAuthenticated ? (
-            <Link
-              to="/"
-              className="navbar-brand"
-              style={{
-                color: "#fff"
-              }}
+      <div>
+        {/*Navbar*/}
+        <nav className="navbar navbar-expand-lg navbar-dark bg-danger">
+          <div className="container">
+            {/* Navbar brand */}
+            {!isAuthenticated ? (
+              <Link className="navbar-brand" to="/">
+                MongoEvents
+              </Link>
+            ) : (
+              <Link className="navbar-brand" to="/events">
+                MongoEvents
+              </Link>
+            )}
+            {/* Collapse button */}
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#basicExampleNav"
+              aria-controls="basicExampleNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
             >
-              MongoEvents
-            </Link>
-          ) : (
-            <span>
+              <span className="navbar-toggler-icon"></span>
+            </button>
+
+            {/* Collapsible content */}
+            <div className="collapse navbar-collapse" id="basicExampleNav">
+              {/* Links */}
+              {!isAuthenticated ? (
+                <ul className="navbar-nav mr-auto ">
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/signin">
+                      Sign In
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/signup">
+                      Register
+                    </Link>
+                  </li>
+                </ul>
+              ) : (
+                <ul className="navbar-nav mr-auto ">
+                  <li className="nav-item">
+                    <Link to="/events/new" className="nav-link ">
+                      <i className="fa fa-plus fa-lg"></i> Add Event
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/account">
+                      <i
+                        className="fa fa-user-circle fa-lg"
+                        style={{ color: "#fff" }}
+                      ></i>{" "}
+                      Account
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <button className="navBtn" onClick={this.logout.bind(this)}>
+                      Sign Out
+                    </button>
+                  </li>
+                </ul>
+              )}
+              {/* Links */}
+            </div>
+            {/* Collapsible content */}
+          </div>
+        </nav>
+        {/*Navbar*/}
+
+        {/* <nav className="navbar navbar-expand-lg navbar-light bg-danger ">
+          <div className="container header">
+            {!isAuthenticated ? (
               <Link
-                to="/events"
+                to="/"
                 className="navbar-brand"
                 style={{
                   color: "#fff"
@@ -35,62 +97,72 @@ class Header extends Component {
               >
                 MongoEvents
               </Link>
-              <Link
-                to="/events/new"
-                style={{
-                  background: "#fff",
-                  borderRadius: "200px",
-                  border: "1px solid #eee",
-                  color: "#777",
-                  height: "40px",
-                  width: "40px",
-                  fontWeight: "bold",
-                  padding: "0 4px",
-                  margin: "0",
-                  marginLeft: "20px"
-                }}
-              >
-                <span style={{ fontSize: "24px" }}>+</span>
-              </Link>
-            </span>
-          )}
+            ) : (
+              <span>
+                <Link
+                  to="/events"
+                  className="navbar-brand"
+                  style={{
+                    color: "#fff"
+                  }}
+                >
+                  MongoEvents
+                </Link>
+                <Link
+                  to="/events/new"
+                  style={{
+                    background: "#fff",
+                    borderRadius: "200px",
+                    border: "1px solid #eee",
+                    color: "#777",
+                    height: "40px",
+                    width: "40px",
+                    fontWeight: "bold",
+                    padding: "0 4px",
+                    margin: "0",
+                    marginLeft: "20px"
+                  }}
+                >
+                  <i className="fa fa-plus"></i>
+                </Link>
+              </span>
+            )}
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-            style={{
-              color: "#fff"
-            }}
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav navbar-right">
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+              style={{
+                color: "#fff"
+              }}
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarNav">
+              {" "}
               {!isAuthenticated ? (
-                <span>
-                  <li className="nav-item">
-                    <Link to="/signin" className="nav-link">
-                      Sign In
-                    </Link>
+                <ul className="nav navbar-nav navbar-right">
+                  <li>
+                    <Link to="/signin">Sign In</Link>
                   </li>
-                  <li className="nav-item">
-                    <Link to="/signup" className="nav-link ">
-                      Sign Up
-                    </Link>
+                  <li>
+                    <Link to="/signup">Sign Up</Link>
                   </li>
-                </span>
+                </ul>
               ) : (
-                <span>
-                  {/* <li className="nav-item">
+                <ul className="nav navbar-nav navbar-right">
+                  <li className="nav-item">
                     <Link to="/account" className="nav-link ">
-                      Account
+                      <i
+                        className="fa fa-user-circle fa-lg"
+                        style={{ color: "#fff" }}
+                      ></i>
                     </Link>
-                  </li> */}
+                  </li>
 
                   <li className="nav-item">
                     <a
@@ -104,12 +176,12 @@ class Header extends Component {
                       Sign Out
                     </a>
                   </li>
-                </span>
+                </ul>
               )}
-            </ul>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav> */}
+      </div>
     );
   }
 }
@@ -121,7 +193,7 @@ class Header extends Component {
 
 function mapStateToProps(state) {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 }
 export default connect(mapStateToProps, { logout })(Header);

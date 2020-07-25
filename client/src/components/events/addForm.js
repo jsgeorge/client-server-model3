@@ -23,7 +23,7 @@ class AddEventForm extends Component {
       description: "",
       errors: {},
       isLoading: false,
-      invalid: false
+      invalid: false,
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -56,7 +56,7 @@ class AddEventForm extends Component {
       eventTime,
       address,
       city,
-      state
+      state,
     } = this.state;
     if (!name) {
       errors.name = "Missing/invalid name";
@@ -95,12 +95,13 @@ class AddEventForm extends Component {
     //if (this.isValidEntries()) {
     this.setState({ errors: {}, isLoading: true });
     this.props.addEvent(this.state).then(
-      res => this.props.history.push("/events"),
-      err => this.setState({ errors: err.response.data, isLoading: false })
+      (res) => this.props.history.push("/events"),
+      (err) =>
+        this.setState({ errors: err.response.data.errors, isLoading: false })
     );
     //}
   }
-  showCategoryButtons = name => (
+  showCategoryButtons = (name) => (
     <span>
       <label className="custom-control-label" for="defaultUnchecked">
         {name}
@@ -134,7 +135,7 @@ class AddEventForm extends Component {
                 name="category"
               >
                 <option value="">Event category</option>
-                {this.props.categories.list.map(c => (
+                {this.props.categories.list.map((c) => (
                   <option key={c._id} value={c.name}>
                     {c.name}
                   </option>
@@ -261,7 +262,7 @@ class AddEventForm extends Component {
           <div className="form-group">
             <button
               disabled={this.state.isLoading || this.state.invalid}
-              className="btn btn-primary btn-lg"
+              className="btn btn-danger btn-lg"
             >
               Submit
             </button>
@@ -274,7 +275,7 @@ class AddEventForm extends Component {
 function mapStateToProps(state) {
   return {
     user: state.auth.user,
-    categories: state.categories
+    categories: state.categories,
   };
 }
 export default connect(mapStateToProps, { addEvent, getCategories })(
