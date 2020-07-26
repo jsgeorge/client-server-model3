@@ -233,7 +233,7 @@ class EventsPage extends Component {
           </div>
 
           <span className="filterCmd ctryFont mobile">
-            {this.state.category}
+            {this.state.category ? this.state.category : "All Categories"}
             <button
               style={{
                 height: "30px",
