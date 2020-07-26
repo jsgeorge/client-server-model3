@@ -95,6 +95,7 @@ a:hover {
   background: rgb(255, 254, 254);
   padding: 2px 4px;
   font-size: 16px;
+  margin-bottom: 15px;
 }
 .ctgryMenu .ctgryBtn {
   width: 100%;

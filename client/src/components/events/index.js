@@ -232,27 +232,25 @@ class EventsPage extends Component {
             ) : null}
           </div>
 
-          {this.state.category ? (
-            <span className="filterCmd ctryFont mobile">
-              {this.state.category}
-              <button
-                style={{
-                  height: "30px",
-                  width: "30",
-                  fontSize: "8px",
-                  padding: "5px 2px",
-                  fontWeight: "bold",
-                  margin: "0 5px 0 0",
-                  marginRignt: "60px",
-                  background: "Transparent",
-                }}
-                className="btn btn-default"
-                onClick={() => this.onShowMobileCtgries()}
-              >
-                \/
-              </button>
-            </span>
-          ) : null}
+          <span className="filterCmd ctryFont mobile">
+            {this.state.category}
+            <button
+              style={{
+                height: "30px",
+                width: "30",
+                fontSize: "8px",
+                padding: "5px 2px",
+                fontWeight: "bold",
+                margin: "0 5px 0 0",
+                marginRignt: "60px",
+                background: "Transparent",
+              }}
+              className="btn btn-default"
+              onClick={() => this.onShowMobileCtgries()}
+            >
+              \/
+            </button>
+          </span>
 
           {categories.list ? (
             <span
