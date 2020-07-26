@@ -9,50 +9,58 @@ const eventSchema = mongoose.Schema({
   name: {
     type: String,
     require: true,
-    trim: true
+    trim: true,
   },
   location: {
     type: String,
-    require: true
+    require: true,
   },
   address: {
     type: String,
-    require: true
+    require: true,
   },
   city: {
     type: String,
-    require: true
+    require: true,
   },
   state: {
     type: String,
-    require: true
+    require: true,
   },
   category: {
     type: String,
-    require: true
+    require: true,
   },
   username: {
     type: String,
     require: true,
-    trim: true
+    trim: true,
   },
   userid: {
     type: String,
     require: true,
-    trim: true
+    trim: true,
   },
   eventDate: {
     type: String,
-    require: true
+    require: true,
   },
   eventTime: {
     type: String,
-    require: true
+    require: true,
   },
   description: {
     type: String,
-    require: false
-  }
+    require: false,
+  },
+  ticketsFrom: {
+    type: Number,
+    require: true,
+  },
+  ticketsTo: {
+    type: Number,
+    require: true,
+  },
 });
 
 const Event = mongoose.model("Event", eventSchema);

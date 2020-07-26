@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import TextFieldGroup from "../common/TextFieldGroup";
 import { connect } from "react-redux";
 import { updateEvent } from "../../actions/eventActions";
 import { getEvent } from "../../actions/eventActions";
-
 class EditEventForm extends Component {
   constructor(props) {
     super(props);
@@ -106,6 +105,7 @@ class EditEventForm extends Component {
           <TextFieldGroup
             error={errors.name}
             label="Name"
+            dispLabel={true}
             onChange={this.onChange}
             //checkUserExists={this.checkUserExists}
             value={this.state.name}
@@ -113,7 +113,8 @@ class EditEventForm extends Component {
           />
           <TextFieldGroup
             error={errors.category}
-            label="category"
+            label="Category"
+            dispLabel={true}
             onChange={this.onChange}
             //checkUserExists={this.checkUserExists}
             value={this.state.category}
@@ -122,7 +123,8 @@ class EditEventForm extends Component {
 
           <TextFieldGroup
             error={errors.eventDate}
-            label="eventDate"
+            label="Event Date"
+            dispLabel={true}
             onChange={this.onChange}
             //checkUserExists={this.checkUserExists}
             value={this.state.eventDate}
@@ -154,7 +156,8 @@ class EditEventForm extends Component {
           />
           <TextFieldGroup
             error={errors.city}
-            label="city"
+            label="City"
+            dispLabel={true}
             onChange={this.onChange}
             //checkUserExists={this.checkUserExists}
             value={this.state.city}
@@ -163,6 +166,7 @@ class EditEventForm extends Component {
           <TextFieldGroup
             error={errors.state}
             label="State"
+            dispLabel={true}
             onChange={this.onChange}
             //checkUserExists={this.checkUserExists}
             value={this.state.state}
@@ -170,7 +174,8 @@ class EditEventForm extends Component {
           />
           <TextFieldGroup
             error={errors.description}
-            label="description"
+            label="Description"
+            dispLabel={true}
             onChange={this.onChange}
             //checkUserExists={this.checkUserExists}
             value={this.state.description}

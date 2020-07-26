@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-//import TextFieldGroup from "../common/TextFieldGroup";
 import { getEvents } from "../../actions/eventActions";
 import { chgDefaultCity } from "../../actions/settingsActions";
 import { getCategories } from "../../actions/categoryActons";
 import { getSettings } from "../../actions/settingsActions";
-
 import classnames from "classnames";
-
 import EventItem from "./item";
 
 class EventsPage extends Component {
@@ -49,12 +46,12 @@ class EventsPage extends Component {
   isValidEntriesSrch() {
     let errors = {};
     const { srchStr } = this.state;
+
     if (!srchStr) {
       errors.srchStr = "Missing/invalid search term";
     }
 
     this.setState({ errors });
-
     const isValid = Object.keys(errors).length === 0;
 
     return isValid;
@@ -206,7 +203,7 @@ class EventsPage extends Component {
                     type="text"
                     className="chgCityBar"
                     name="defaultCity"
-                    placeholder=" default city"
+                    placeholder=" City"
                     onChange={this.onChange}
                     value={this.state.defaultCity}
                   />
@@ -214,7 +211,7 @@ class EventsPage extends Component {
                     type="text"
                     className="chgStateBar"
                     name="defaultState"
-                    placeholder="default State"
+                    placeholder="State"
                     onChange={this.onChange}
                     value={this.state.defaultState}
                   />

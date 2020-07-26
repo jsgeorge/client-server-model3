@@ -5,14 +5,15 @@ const TextFieldGroup = ({
   field,
   value,
   label,
+  dispLabel,
   error,
   type,
   onChange,
-  checkUserExists
+  checkUserExists,
 }) => {
   return (
     <div className={classnames("form-group", { "has-error": error })}>
-      {/* <label className="control-label">{label}</label> */}
+      {dispLabel ? <label className="control-label">{label}</label> : null}
       <input
         onChange={onChange}
         onBlur={checkUserExists}
